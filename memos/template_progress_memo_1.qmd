@@ -3,7 +3,7 @@ title: "Progress Memo 1"
 subtitle: |
   | Final Project 
   | Data Science 2 with R (STAT 301-2)
-author: "YOUR NAME"
+author: "Sonia Bhatia"
 date: today
 
 format:
@@ -35,7 +35,7 @@ You should make this document your own. To help with this we have added a date t
 
 To link to your github **repo**sitory, appropriately edit the example link below. Meaning replace `https://your-github-repo-url` with your github repo url. Suggest verifying the link works before submitting.
 
-[https://your-github-repo-url](https://your-github-repo-url)
+[https://github.com/stat301-2-2024-winter/final-project-2-soniab101](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
 
 :::
 
@@ -45,21 +45,38 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 **We may need to do that for files in your final project!**
 :::
 
+## Prediction question
+My prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
+
 ## Data source
 
-Blah blah blah^[an example of footnote --- [content in margins](https://quarto.org/docs/blog/posts/2022-02-17-advanced-layout/)]
+```{r}
+library(tidyverse)
+library(naniar)
+#setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101")
+air_data<- read_csv("data/city_day.csv")
 
-## Why this data
+```
 
-Blah blah blah^[another footnote]
+I found this dataset on Kaggle titled 'Air Quality Data in India (2015-2020). The data has been compiled from the Central Pollution Control Board (CPCB) website: https://cpcb.nic.in/ which is the official body of Government of India. 
+[Source: Found on Kaggle, linked here. Data is from: https://cpcb.nic.in/](https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india?select=city_day.csv)]
+
+
 
 ## Data quality & complexity check
+```{r}
+miss_var_summary(air_data)
 
-Blah blah blah
+gg_miss_var(air_data)
+```
+
+
+I have 16 variables in my dataset, and 29531 observations. There are 3 categorical variables, and 13 numerical variables. I do have missingness issues, as shown above. All the variables other than data and city are missing observations, however, for most variables they are just missing a small portion of their observations. However, I am missing almost 2/3 of the observations for the Xylene variables. Since my dataset is very large though, I do not believe this missing data will be a significant issue since I still have many data points. 
+
 
 ## Potential data issues
 
-Blah blah blah
+
 
 ## Misc
 
