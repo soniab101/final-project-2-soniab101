@@ -20,14 +20,7 @@ reference-location: margin
 citation-location: margin
 ---
 
-::: {.callout-important}
-## Memo format
 
-Like all other submissions for this course, we expect the memo to be neat and well organized. This a template to get you started. 
-
-You should make this document your own. To help with this we have added a date to the yaml above (good whenever writing memos). You should remove this block when making this document your own.
-
-:::
 
 ::: {.callout-tip icon=false}
 
@@ -53,8 +46,8 @@ My prediction research question is can we predict the air quality on a certain d
 ```{r}
 library(tidyverse)
 library(naniar)
-#setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101")
-air_data<- read_csv("data/city_day.csv")
+setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101/memos")
+air_data<- read_csv("city_day.csv")
 
 ```
 
@@ -73,11 +66,18 @@ gg_miss_var(air_data)
 
 I have 16 variables in my dataset, and 29531 observations. There are 3 categorical variables, and 13 numerical variables. I do have missingness issues, as shown above. All the variables other than data and city are missing observations, however, for most variables they are just missing a small portion of their observations. However, I am missing almost 2/3 of the observations for the Xylene variables. Since my dataset is very large though, I do not believe this missing data will be a significant issue since I still have many data points. 
 
+## Target variable analysis
+```{r}
+#| echo: false
+air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
+  scale_x_continuous(limits = c(0,1000)) +
+  labs(title = "Air Quality in India", x = "Air Quality Index")
 
-## Potential data issues
 
+```
 
+I noticed that the data is left skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The left skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, it might be best to perform a log transformation to normalize the data. 
 
 ## Misc
+I think I will need to plan for a good amount of time for data cleaning in relation to the missing data since quite a few observations are missing. I will make sure to leave adequate time for fitting and training my models since my dataset is very large, meaning that the run time could be high. 
 
-Blah Blah
