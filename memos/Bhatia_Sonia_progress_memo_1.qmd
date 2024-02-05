@@ -44,6 +44,7 @@ My prediction research question is can we predict the air quality on a certain d
 ## Data source
 
 ```{r}
+#| echo: true
 library(tidyverse)
 library(naniar)
 setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101/memos")
@@ -68,7 +69,6 @@ I have 16 variables in my dataset, and 29531 observations. There are 3 categoric
 
 ## Target variable analysis
 ```{r}
-#| echo: false
 air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
   scale_x_continuous(limits = c(0,1000)) +
   labs(title = "Air Quality in India", x = "Air Quality Index")
