@@ -76,7 +76,7 @@ air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "wh
 
 ```
 
-I noticed that the data is left skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The left skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, it might be best to perform a log transformation to normalize the data. 
+I noticed that the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, it might be best to perform a log transformation to normalize the data. 
 
 ## Misc
 I think I will need to plan for a good amount of time for data cleaning in relation to the missing data since quite a few observations are missing. I will make sure to leave adequate time for fitting and training my models since my dataset is very large, meaning that the run time could be high. 
