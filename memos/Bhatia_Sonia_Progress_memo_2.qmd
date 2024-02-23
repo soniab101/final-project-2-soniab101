@@ -1,0 +1,76 @@
+---
+title: "Progress Memo 2"
+subtitle: |
+  | Final Project 
+  | Data Science 2 with R (STAT 301-2)
+author: "Sonia Bhatia"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+reference-location: margin
+citation-location: margin
+---
+
+
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+To link to your github **repo**sitory, appropriately edit the example link below. Meaning replace `https://your-github-repo-url` with your github repo url. Suggest verifying the link works before submitting.
+
+[https://github.com/stat301-2-2024-winter/final-project-2-soniab101](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
+
+:::
+
+::: {.callout-warning}
+GitHub (free account) cannot store large files. If you try to commit and push a large dataset you will have an ERROR! Any file over 100 MB (100,000 KB) needs to be added to the `.gitignore` file BEFORE committing.
+
+**We may need to do that for files in your final project!**
+:::
+
+## Assessment metric
+To evaluate the performance of my predictive model, I will ... rmse, mae, r^2
+
+## Data source
+
+```{r}
+#| echo: true
+library(tidyverse)
+library(naniar)
+setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101/memos")
+air_data<- read_csv("city_day.csv")
+
+```
+
+I found this dataset on Kaggle titled 'Air Quality Data in India (2015-2020). The data has been compiled from the Central Pollution Control Board (CPCB) website: https://cpcb.nic.in/ which is the official body of Government of India. 
+[Source: Found on Kaggle, linked here. Data is from: https://cpcb.nic.in/](https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india?select=city_day.csv)]
+
+
+
+## Analysis plan
+
+
+## Target variable analysis
+```{r}
+air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
+  scale_x_continuous(limits = c(0,1000)) +
+  labs(title = "Air Quality in India", x = "Air Quality Index")
+
+
+```
+
+I noticed that the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, it might be best to perform a log transformation to normalize the data. 
+
+## Misc
+I think I will need to plan for a good amount of time for data cleaning in relation to the missing data since quite a few observations are missing. I will make sure to leave adequate time for fitting and training my models since my dataset is very large, meaning that the run time could be high. 
+
