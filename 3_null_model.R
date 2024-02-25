@@ -6,6 +6,8 @@ library(here)
 # handle common conflicts
 tidymodels_prefer()
 
+set.seed(1234)
+
 load("results/air_recipe_basic.rda")
 
 
@@ -24,3 +26,5 @@ null_fit <- null_wflw|>
   fit_resamples(
     resamples = air_folds, 
     control = control_resamples(save_workflow = TRUE))
+
+save(null_fit, file = "results/null_fit.rda")

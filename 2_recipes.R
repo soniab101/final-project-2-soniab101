@@ -8,17 +8,20 @@ tidymodels_prefer()
 
 load("results/kc_split.rda")
 
+set.seed(1234)
+
 # basic recipe:
 air_recipe_basic <-  recipe(aqi_log10 ~ ., data = air_train) |> 
   step_mutate(data = as_date(date)) |> 
-  step_rm(aqi, aqi_bucket) |> 
+  step_date(date, features = "month") |> 
+  step_rm(aqi, aqi_bucket, date, data) |> 
   step_dummy(all_nominal_predictors()) |> 
   step_zv(all_predictors()) |> 
-  step_normalize(all_numeric_predictors())  |> 
-  step_date(date, features = "month")
+  step_normalize(all_numeric_predictors()) 
+  
 
 
-air_recipe_basic  |> 
+prep<- air_recipe_basic  |> 
   prep() |> 
   bake(new_data = NULL)
 
