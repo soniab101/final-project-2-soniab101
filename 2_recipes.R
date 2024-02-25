@@ -9,20 +9,23 @@ tidymodels_prefer()
 load("results/kc_split.rda")
 
 # basic recipe:
-air_recipe_baseline <-  recipe(aqi_log10 ~ ., data = air_train) |> 
-  step_rm(city,aqi, aqi_bucket) |> 
-  step_dummy(type) |> 
+air_recipe_basic <-  recipe(aqi_log10 ~ ., data = air_train) |> 
+  step_mutate(data = as_date(date)) |> 
+  step_rm(aqi, aqi_bucket) |> 
+  step_dummy(all_nominal_predictors()) |> 
   step_zv(all_predictors()) |> 
-  step_normalize(all_predictors())
+  step_normalize(all_numeric_predictors())  |> 
+  step_date(date, features = "month")
+
+
+air_recipe_basic  |> 
+  prep() |> 
+  bake(new_data = NULL)
+
+save(air_recipe_basic, file = "results/air_recipe_basic.rda")
 
 
 
-#abalone_recipe_baseline  |> 
-#  prep() |> 
-# bake(new_data = NULL)
-
-null_model(mode = "regression") |> 
-  set_engine("parsnip")
 
 #### Task 4
 
@@ -48,7 +51,7 @@ kc_recipe <- recipe(price_log10 ~ ., data = kc_train) |>
   # natural spline
   # always step_zv before normalizing
   step_zv(all_predictors()) |> 
-  step_normalize(all_predictors())
+  step_normalize(all_numeric_predictors())
 # center scale
 
 
