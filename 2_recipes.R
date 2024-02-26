@@ -6,7 +6,7 @@ library(here)
 # handle common conflicts
 tidymodels_prefer()
 
-load("results/kc_split.rda")
+load("results/air_split.rda")
 
 set.seed(1234)
 
