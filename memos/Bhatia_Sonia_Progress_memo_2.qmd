@@ -55,7 +55,7 @@ library(gt)
 tidymodels_prefer()
 
 #load in data
-air_data<- read_csv("data/city_day.csv")
+air_data<- read_csv(here("data/city_day.csv"))
 load(here("results/air_folds.rda"))
 load(here("results/air_recipe_basic.rda"))
 load(here("results/air_split.rda"))
