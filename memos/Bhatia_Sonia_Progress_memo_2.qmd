@@ -26,29 +26,42 @@ citation-location: margin
 
 ## Github Repo Link
 
-To link to your github **repo**sitory, appropriately edit the example link below. Meaning replace `https://your-github-repo-url` with your github repo url. Suggest verifying the link works before submitting.
-
 [https://github.com/stat301-2-2024-winter/final-project-2-soniab101](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
 
 :::
 
-::: {.callout-warning}
-GitHub (free account) cannot store large files. If you try to commit and push a large dataset you will have an ERROR! Any file over 100 MB (100,000 KB) needs to be added to the `.gitignore` file BEFORE committing.
 
-**We may need to do that for files in your final project!**
-:::
+## Prediction question
+My prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
+
+
 
 ## Assessment metric
-To evaluate the performance of my predictive model, I will ... rmse, mae, r^2
+To evaluate the performance of my predictive model, I will use rmse and r^2. RMSE is the root mean squared error, and tells us how much error our model has in predicting values that correctly match the actual values. R^2 is measuring the proportion of variance in the dependent variable that is can be explained by the independent variable. I will use RMSE as my primary metric, and determine which model performs the best by evaluating which has the lowest RMSE. If the RMSEs are tied, I will use the r^2 as a secondary metric. 
+
+
 
 ## Data source
 
 ```{r}
-#| echo: true
+#| echo: false
+# load packages ----
 library(tidyverse)
-library(naniar)
-setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101/memos")
-air_data<- read_csv("city_day.csv")
+library(tidymodels)
+library(here)
+library(gt)
+
+# handle common conflicts
+tidymodels_prefer()
+
+#load in data
+air_data<- read_csv("data/city_day.csv")
+load(here("results/air_folds.rda"))
+load(here("results/air_recipe_basic.rda"))
+load(here("results/air_split.rda"))
+load(here("results/keep_pred.rda"))
+load(here("results/null_fit.rda"))
+load(here("results/lm_fit_basic.rda"))
 
 ```
 
@@ -56,21 +69,33 @@ I found this dataset on Kaggle titled 'Air Quality Data in India (2015-2020). Th
 [Source: Found on Kaggle, linked here. Data is from: https://cpcb.nic.in/](https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india?select=city_day.csv)]
 
 
-
+  
 ## Analysis plan
+I split my data into training and testing with 70% of the data as the training data and 30% as the testing. I also used v-fold cross-validation to resample my data. I will be fitting/training each model 15 times. Currently, I have my baseline recipe created. In this recipe, I use step_mutate to transform my date variable into the date type, and then I use step_date to extract the month from each of the date observations, and converts the date data into factor variables. I then step removed the aqi, aqi_bucket, and original date variable. The aqi_bucket variable is based off of the aqi, so I believe that it is not helping us in predicting the aqi. I performed step_dummy on all my nominal predictors, and did step_zv to remove any variables that had zero variance. Lastly, I normalized all my numeric predictor variables. 
+
+Using this basic recipe, I created my null and linear regression models and fit them to the resampled data. I plan to create parametric recipe that is more specific/advanced and includes more transformations. I am expecting to do step_impute for the CO, NO, NO2, SO2, O3, NOx, PM2.5, Benzene, Toluene, NH3, and PM10 variables since they have some missingness. I think I will step remove the Xylene variable since it is missing 61% of its data. 
+For tree based models, I plan on creating a baseline recipe, and then a more advanced one as well. The 6 model types I plan on using are my null model, linear regression, elastic, k-nearest neighbors, random forest, and boosted tree models. I will have my null model, linear regression, and elastic models fitted to my parametric recipes, and I will have my knn models, random forest models, and boosted tree models fitted to my tree recipes. 
 
 
-## Target variable analysis
+## Demonstration of model fits
 ```{r}
-air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
-  scale_x_continuous(limits = c(0,1000)) +
-  labs(title = "Air Quality in India", x = "Air Quality Index")
+#| echo: false
+air_metrics<- read_csv(here("results/air_metrics.csv"))
+
+air_metrics |>  
+  select(.metric, model, mean, std_err) |>  
+  group_by(.metric) |> 
+  gt() |> 
+  row_group_order(groups = c("rmse", "rsq")) |> 
+  tab_header(title = md("Model Assessments")) |> 
+  tab_options(row_group.background.color = "gray60")
+
+
 
 
 ```
 
-I noticed that the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, it might be best to perform a log transformation to normalize the data. 
+Both my models were successfully fitted, and as shown in the table above, I was able to output my assessment metrics of rmse and r^2 on them. My lm model had a lower mean rmse than my null model, which was expected. 
 
-## Misc
-I think I will need to plan for a good amount of time for data cleaning in relation to the missing data since quite a few observations are missing. I will make sure to leave adequate time for fitting and training my models since my dataset is very large, meaning that the run time could be high. 
-
+## Progress & Next Steps
+I need to create my more specified recipe, and a basic and more advanced recipe for the tree models. I also plan on tuning my knn, random forest, and boosted tree model, and I need to identify the hyperparameters that I want to tune with. I also need to determine which predictor variables may have interactions with each other, and what other elements I should incorporate into my recipes. 
