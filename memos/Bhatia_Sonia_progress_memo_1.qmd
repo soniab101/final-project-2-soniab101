@@ -47,8 +47,7 @@ My prediction research question is can we predict the air quality on a certain d
 #| echo: true
 library(tidyverse)
 library(naniar)
-setwd("/Users/sonia/Desktop/STAT 301-2/final project/final-project-2-soniab101/memos")
-air_data<- read_csv("city_day.csv")
+air_data<- read_csv(here("data/city_day.csv"))
 
 ```
 
@@ -59,9 +58,9 @@ I found this dataset on Kaggle titled 'Air Quality Data in India (2015-2020). Th
 
 ## Data quality & complexity check
 ```{r}
-miss_var_summary(air_data)
+miss_var_summary(air_train)
 
-gg_miss_var(air_data)
+gg_miss_var(air_train)
 ```
 
 
