@@ -16,7 +16,8 @@ set.seed(1234)
 
 air_data_trans <- air_data |> janitor::clean_names() |> 
   mutate(aqi_log10 = log10(aqi),
-         city = factor(city))
+         city = factor(city),
+         date = as_date(date))
 
 
 air_split <- air_data_trans |> 
@@ -26,6 +27,7 @@ air_train <- training(air_split)
 air_test <- testing(air_split)
 
 save(air_train, air_test, file = "results/air_split.rda")
+
 
 
 #### Task 2

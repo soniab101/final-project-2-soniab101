@@ -11,20 +11,23 @@ load("results/air_split.rda")
 set.seed(1234)
 
 # basic recipe:
-air_tree_recipe_basic <-  recipe(aqi_log10 ~ ., data = air_train) |> 
-  step_mutate(data = as_date(date)) |> 
-  step_date(date, features = "month") |> 
-  step_rm(aqi, aqi_bucket) |> 
+air_recipe_base_tree <-  recipe(aqi_log10 ~ ., data = air_train) |> 
+  step_mutate(date_month = month(date),
+              date_year = year(date),
+              date_year = factor(date_year),
+              date_month = month(date)) |> 
+  step_rm(aqi, aqi_bucket, date) |> 
+  step_impute_mode(all_nominal_predictors()) |> 
+  step_impute_median(all_numeric_predictors()) |> 
   step_dummy(all_nominal_predictors(), one_hot = TRUE) |> 
   step_zv(all_predictors()) |> 
   step_normalize(all_numeric_predictors()) 
 
-#step_impute but don't use linear, maybe median or mean, step mode for categorical variables
 
-#prep<- air_recipe_basic  |> 
-#  prep() |> 
-#  bake(new_data = NULL)
+ #air_recipe_base_tree  |> 
+ # prep() |> 
+ # bake(new_data = NULL)
 
-save(air_recipe_basic, file = "results/air_recipe_basic.rda")
+save(air_recipe_base_tree, file = "results/air_recipe_base_tree.rda")
 
 
