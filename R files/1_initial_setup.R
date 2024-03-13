@@ -14,10 +14,15 @@ air_data<- read_csv("data/city_day.csv")
 
 set.seed(1234)
 
-air_data_trans <- air_data |> janitor::clean_names() |> 
-  mutate(aqi_log10 = log10(aqi),
+air_data_trans <- air_data |> janitor::clean_names() 
+
+air_data_trans <- air_data_trans[!is.na(air_data_trans[,"aqi"]),] 
+
+air_data_trans <- air_data_trans |> mutate(aqi_log10 = log10(aqi),
          city = factor(city),
-         date = as_date(date))
+         date = as_date(date), 
+         date_month = month(date),
+         date_year = year(date))
 
 
 air_split <- air_data_trans |> 

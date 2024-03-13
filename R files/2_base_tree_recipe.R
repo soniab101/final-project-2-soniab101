@@ -12,10 +12,8 @@ set.seed(1234)
 
 # basic recipe:
 air_recipe_base_tree <-  recipe(aqi_log10 ~ ., data = air_train) |> 
-  step_mutate(date_month = month(date),
-              date_year = year(date),
-              date_year = factor(date_year),
-              date_month = month(date)) |> 
+  step_mutate(
+              date_year = factor(date_year) ) |> 
   step_rm(aqi, aqi_bucket, date) |> 
   step_impute_mode(all_nominal_predictors()) |> 
   step_impute_median(all_numeric_predictors()) |> 

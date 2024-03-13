@@ -23,19 +23,32 @@ load(here("results/air_folds.rda"))
 
 # en model lasso ?? prob need to change to be tuning param
 
-en_model_basic <- linear_reg() |> 
-  set_engine("glmnet") |>   set_mode("regression") |> 
-  set_args(mixture = 1, penalty = 0.01)
+en_model_basic <- linear_reg(penalty = tune(), mixture = tune()) |> 
+  set_engine("glmnet") 
 
 en_workflow_basic <- workflow() |> 
   add_model(en_model_basic) |> 
   add_recipe(air_recipe_basic)
 
-en_fit_basic <- en_workflow_basic |> fit_resamples(
-  resamples = air_folds, 
-  control = control_resamples(save_workflow = TRUE))
+# tuning
+en_params <- hardhat::extract_parameter_set_dials(en_model_basic) |> 
+  update(mixture = mixture(range = c(0,1)),
+         penalty = penalty(range = c(-0.02,0)))
+
+en_grid <- grid_regular(en_params, levels = 10)
+
+tuned_en_basic <- tune_grid(en_workflow_basic,
+                      air_folds,
+                      grid = en_grid,
+                      control = control_grid(save_workflow = TRUE))
+
+#en_fit_basic <- en_workflow_basic |> fit_resamples(
+#  resamples = air_folds, 
+#  control = control_resamples(save_workflow = TRUE))
+
+
 
 # write out results (fitted/trained workflows) ----
-save(en_fit_basic, file = here("results/en_fit_basic.rda"))
+save(tuned_en_basic, file = here("results/tuned_en_basic.rda"))
 
 
