@@ -16,7 +16,11 @@ set.seed(1234)
 
 air_data_trans <- air_data |> janitor::clean_names() |> 
   mutate(aqi_log10 = log10(aqi),
-         city = factor(city))
+         city = factor(city),
+         date_month = month(date),
+         date_month = factor(date_month),
+         date_year = year(date),
+         date_year = factor(date_year))
 
 
 air_split <- air_data_trans |> 
