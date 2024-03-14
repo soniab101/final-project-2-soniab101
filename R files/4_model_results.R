@@ -24,10 +24,55 @@ null_fit_metrics <- null_fit |>
 
 lm_fit_basic_metrics <- lm_fit_basic |> 
   collect_metrics() |> 
-  mutate(model = "lm")
+  mutate(model = "lm basic")
+
+# need to do
+lm_fit_adv_metrics <- lm_fit_adv |> 
+  collect_metrics() |> 
+  mutate(model = "lm advanced")
 
 
-air_metrics <- bind_rows(null_fit_metrics, lm_fit_basic_metrics)
+tuned_en_basic_metrics <- tuned_en_basic |> 
+  collect_metrics() |> 
+  mutate(model = "en basic")
+
+
+tuned_en_adv_metrics <- tuned_en_adv |> 
+  collect_metrics() |> 
+  mutate(model = "en advanced")
+
+tuned_knn_basic_metrics <- tuned_knn_basic |> 
+  collect_metrics() |> 
+  mutate(model = "knn basic")
+
+tuned_knn_adv_metrics <- tuned_knn_adv |> 
+  collect_metrics() |> 
+  mutate(model = "knn advanced")
+
+tuned_rf_basic_metrics <- tuned_rf_basic |> 
+  collect_metrics() |> 
+  mutate(model = "rf basic")
+
+tuned_rf_adv_metrics <- tuned_en_basic |> 
+  collect_metrics() |> 
+  mutate(model = "rf advanced")
+
+tuned_bt_basic_metrics <- tuned_bt_basic |> 
+  collect_metrics() |> 
+  mutate(model = "bt basic")
+
+tuned_bt_adv_metrics <- tuned_bt_adv |> 
+  collect_metrics() |> 
+  mutate(model = "bt adv")
+
+
+air_metrics <- bind_rows(null_fit_metrics, lm_fit_basic_metrics, lm_fit_adv_metrics,
+                         en_fit_basic_metrics, en_fit_adv_metrics,
+                         rf_fit_basic_metrics, rf_fit_adv_metrics,
+                         bt_fit_basic_metrics, bt_fit_adv_metrics,
+                         knn_fit_basic_metrics, knn_fit_adv_metrics)
+
+
 write.csv(air_metrics, file = here("results/air_metrics.csv"))
 
 
@@ -39,4 +84,8 @@ air_metrics_tbl <- air_metrics |>
   tab_header(title = md("Model Assessments")) |> 
   tab_options(row_group.background.color = "gray60")
 
-
+model_results <- as_workflow_set(
+  knn_basic = tuned_knn_basic,
+  knn_adv = tuned_knn_basic,
+  knn = tuned_knn
+)

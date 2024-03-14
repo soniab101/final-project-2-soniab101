@@ -16,6 +16,7 @@ set.seed(1234)
 
 load(here("results/air_split.rda"))
 load(here("results/air_recipe_basic.rda"))
+load(here("results/air_recipe_basic_lm.rda"))
 load(here("results/air_recipe_adv.rda"))
 load(here("results/air_recipe_base_tree.rda"))
 load(here("results/air_recipe_adv_tree.rda"))
@@ -30,12 +31,14 @@ null_model <- null_model() %>%
 # define workflows ----
 null_wflw <- workflow() %>% 
   add_model(null_model) %>% 
-  add_recipe(air_recipe_basic)
+  add_recipe(air_recipe_basic_lm)
 
 
-null_fit <- null_wflw|> 
+null_fit <- null_wflw |> 
   fit_resamples(
     resamples = air_folds, 
-    control = control_resamples(save_workflow = TRUE))
+    control = control_resamples(save_workflow = TRUE),
+    metrics = metric_set(rmse)
+    )
 
-save(null_fit, file = "results/null_fit.rda")
+save(null_fit, file = here("results/null_fit.rda"))

@@ -15,7 +15,7 @@ registerDoMC(cores = num_cores)
 set.seed(1234)
 
 load(here("results/air_split.rda"))
-load(here("results/air_recipe_basic.rda"))
+load(here("results/air_recipe_basic_lm.rda"))
 load(here("results/air_recipe_adv.rda"))
 load(here("results/air_recipe_base_tree.rda"))
 load(here("results/air_recipe_adv_tree.rda"))
@@ -31,7 +31,7 @@ lm_spec_base <-
 # define workflows ----
 lm_wflow_base <- workflow() |> 
   add_model(lm_spec_base) |> 
-  add_recipe(air_recipe_basic)
+  add_recipe(air_recipe_basic_lm)
 
 # fit workflows/models ----
 lm_fit_basic <- lm_wflow_base |> fit_resamples(
