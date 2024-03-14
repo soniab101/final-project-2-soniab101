@@ -52,19 +52,14 @@ tbl_result_basic <- model_results_basic |>
   select('Model Type' = wflow_id,
          'RMSE' = mean,
          'Num Computations' = n,
-         'Standard Error' = std_err) 
-
-write_csv(tbl_result_basic, here("results/tbl_result_basic.csv"))
-
-# gt the table
-  gt() |> 
+         'Standard Error' = std_err) |> gt() |> 
   tab_header(title = md("Assessment Metrics"),
              subtitle = md("All Models - Basic Recipe")) |> 
   tab_style(style = cell_fill(color = "grey"),
             locations = cells_column_labels(columns = everything())) 
 
 
-
+save(tbl_result_basic, file = here("results/tbl_result_basic.rda"))
 
 model_results_adv <- as_workflow_set(
   lm_main = lm_fit_adv,
@@ -89,8 +84,8 @@ tbl_result_adv <- model_results_adv |>
   tab_style(style = cell_fill(color = "grey"),
             locations = cells_column_labels(columns = everything()))  
 
-write_csv(tbl_result, here("results/tbl_result.csv"))
 
+save(tbl_result_adv, file = here("results/tbl_result_adv.rda"))
 
 
 # hyperparameters table for knn
@@ -114,7 +109,8 @@ best_en_basic_param <- tuned_en_basic |> select_best("rmse") |>
 best_en_adv_param<- tuned_en_adv |> select_best("rmse") |> 
   mutate(Recipe = "main")
 
-en_param_table <- bind_rows(best_en_basic_param, best_en_adv_param) |> select(Recipe, penalty, mixture) |> 
+en_param_table <- bind_rows(best_en_basic_param, best_en_adv_param) |>
+  select(Recipe, penalty, mixture) |> 
   gt() |>  
   tab_header(title = md("Best Hyperparameters - Elastic Net")) |> 
   tab_style(style = cell_fill(color = "grey"),
@@ -140,18 +136,22 @@ cols_label(
             ) 
 
 
-# hyperparameters table for bt
-best_bt_basic_param <- tuned_bt_basic |> select_best("rmse") |> 
+# hyperparameters table for rf
+best_rf_basic_param <- tuned_rf_basic |> select_best("rmse") |> 
   mutate(Recipe = "basic")
 
-best_bt_adv_param<- tuned_bt_adv |> select_best("rmse") |> 
+best_rf_adv_param<- tuned_rf_adv |> select_best("rmse") |> 
   mutate(Recipe = "main")
 
-bt_param_table <- bind_rows(best_bt_basic_param, best_bt_adv_param) |> select(Recipe, penalty, mixture) |> 
+rf_param_table <- bind_rows(best_rf_basic_param, best_rf_adv_param) |> select(Recipe, mtry, min_n) |> 
   gt() |>  
-  tab_header(title = md("Best Hyperparameters - Elastic Net")) |> 
+  tab_header(title = md("Best Hyperparameters - Random Forest")) |> 
   tab_style(style = cell_fill(color = "grey"),
-            locations = cells_column_labels(columns = everything())) 
+            locations = cells_column_labels(columns = everything())) |> 
+  cols_label(
+    mtry = "Number of Sample Predictors",
+    min_n = "Minimal Node Size"
+    ) 
 
 
 

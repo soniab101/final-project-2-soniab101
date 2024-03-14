@@ -1,0 +1,31 @@
+---
+title: "Predicting Air Quality Levels in India"
+subtitle: |
+  | Final Project 
+  | Data Science 2 with R (STAT 301-2)
+author: "Sonia Bhatia"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+reference-location: margin
+citation-location: margin
+---
+
+
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[https://github.com/stat301-2-2024-winter/final-project-2-soniab101](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
+
+:::
