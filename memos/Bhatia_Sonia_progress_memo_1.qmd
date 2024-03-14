@@ -58,9 +58,9 @@ I found this dataset on Kaggle titled 'Air Quality Data in India (2015-2020). Th
 
 ## Data quality & complexity check
 ```{r}
-miss_var_summary(air_train)
+miss_var_summary(air_data)
 
-gg_miss_var(air_train)
+gg_miss_var(air_data)
 ```
 
 
@@ -72,6 +72,11 @@ air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "wh
   scale_x_continuous(limits = c(0,1000)) +
   labs(title = "Air Quality in India", x = "Air Quality Index")
 
+air_data |> ggplot(aes(x = AQI)) + geom_boxplot(fill = "lightseagreen") +
+  labs(title = "Air Quality in India", x = "Air Quality Index")
+
+
+air_data |> ggplot(aes(x = log(AQI))) + geom_boxplot(fill = "lightseagreen") + labs(title = "Air Quality in India", x = "Log Transformation of Air Quality Index")
 
 ```
 

@@ -26,6 +26,84 @@ citation-location: margin
 
 ## Github Repo Link
 
-[https://github.com/stat301-2-2024-winter/final-project-2-soniab101](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
+[My GitHub Repo Link](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
 
 :::
+
+```{r}
+#| echo: false
+# load packages ----
+library(tidyverse)
+library(tidymodels)
+library(here)
+library(naniar)
+library(gt)
+
+# handle common conflicts
+tidymodels_prefer()
+
+set.seed(1234)
+
+air_data <- read_csv(here("data/city_day.csv"))
+```
+
+## Introduction
+
+### Prediction question:
+
+My prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
+
+
+### Data Source:
+
+This dataset is titled ’Air Quality Data in India (2015-2020) and is downloaded from Kaggle. The data has been compiled from the Central Pollution Control Board (CPCB) website: https://cpcb.nic.in/ which is the official body of Government of India. 
+
+
+## Data Overview:
+I have 16 variables in my dataset, and 29531 observations. There are 3 non-numeric variables, city, date, and aqi_bucket, which I transformed to be factor/categorical variables, and 13 numerical variables. Some of the numeric variables are particulate matter 10 micrometers or less in diameter, carbon monoxide, benzene, ozone, and more. Most of the variables are gases in the air that are key in predicting air quality levels. Additionally, many of these variables, such as ozone and nitrogen oxides, are air pollutants with known associations to adverse health effects on humans.
+
+
+### Cleaned Data
+
+To clean the dataset, I cleaned the variable names, and removed the missingness from my target variable, air quality index. I also created a new variable that was a log transformation of the air quality index variable, which I will explain the reasoning behind in the following section. Additionally, I extracted the month and year from the date variable because I believed those would be more meaningful in predicting our target variable.
+
+
+### Missingness
+
+```{r}
+#| echo: false
+  #| label: fig-1
+  #| fig-cap: "Figure 1: Missingness across variables"
+
+load(here("results/miss_var_plot.rda"))
+
+miss_var_plot
+
+miss_var_summary(air_data)
+```
+
+
+I do have missingness issues, as explored in @fig-1 
+above. All the variables other than date and city are missing observations, however, for most variables they are just missing a small portion of their observations. I am missing about 15% of the data on my target variable, so I knew I needed to exclude those missing values before continuing with splitting my data. I noticed that I am missing almost 2/3 of the observations for the Xylene variable. The variables with large portions missing may not be as useful as predictor variables. Since my dataset is very large though, I do not believe this missing data will be a significant issue since I still have many valid observations.
+
+### Target Variable Analysis
+Figure 2 and figure 3 below show the distribution of the air quality index variable. As we can see, the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, I decided it would be best to perform a log transformation to normalize the data.
+
+```{r}
+#| echo: false
+#| label: fig-2
+#| fig-cap: "Figure 2: Distribution of AQI"
+
+air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
+  scale_x_continuous(limits = c(0,1000)) +
+  labs(title = "Air Quality in India", x = "Air Quality Index")
+
+```
+
+### References:
+
+Air Quality in India. Found on Kaggle, linked here: [https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india]
+
+Data is from Central Pollution Control Board : [https://cpcb.nic.in/]
+
+
