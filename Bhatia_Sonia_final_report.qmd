@@ -243,9 +243,34 @@ en_param_table
 ```
 
 ### Discussion:
-Overall, the random forest model performed the best for both the basic and feature engineered recipe. I was not surprised by this, as it typically has high accuracy in its predictions and prevents overfitting well. It performed slightly better on the main recipe than it did on the basic recipe, but the difference is surprisingly very minimal. 
+Overall, the random forest model performed the best for both the basic and feature engineered recipe. It performed slightly better on the main recipe than it did on the basic recipe, but the difference is surprisingly very minimal. I was surprised by the lack of improvement when using the feature engineered recipe because I expected the interaction terms would help make the model more accurate. However, the model already had a very high performance on the basic recipe, so it would be difficult to increase its accuracy any higher. The boosted tree model performed the second best on both recipes, with a low rmse value of 0.0899 on the basic recipe and slightly worse rmse of 0.092 on the main recipe. The nearest neighbors model performed the next best, with rmse values that were very close to those of the boosted tree models. This model also did not see improvement from using the main recipe. I found it interesting that the top 3 best performing models were all tree based. The linear model and elastic net model both performed the fourth and fifth best, respectively. They had very similar rmse values, but were only slightly higher than their better performing tree models. I was interested to see that the linear model performed better than the elastic net model, especially since I thought the linear model was more simple, and we utilized tuning on the elastic net model. The model that performed the worst was unsurprisingly the null model. It only used the basic recipe, and served as a good benchmark model with an rmse of 0.29. We could see from the null model's significantly higher rmse value that building more complex models is worthwhile to do since they perform significantly better. 
 
-While all models saw slight improvement in the rmse values between the basic recipe and feature engineered (main) recipe, there was not a significant difference which I found surprising. This could be due to some of 
+The lack of improvement between models using the basic versus the feature engineered recipes was surprising to me, and indicated that possibly the interaction terms I chose did not help to improve the models' performance. Also, I had expected categorizing the month variable into seasons would possibly make it a better predictor, but it does not seem to have been the case. One reason why there was not a large improvement could have been because some of the variables had many levels, which could have led to over parameterizing the recipes. 
+
+The model with the lowest rmse value and therefore highest performance is the random forest model on the main recipe. I was not surprised by this, as it typically has high accuracy in its predictions and prevents overfitting well. The high number of trees and utilization of tuning parameters most likely contributed to its highly accurate performance. 
+
+
+## Final Model Analysis
+
+This section evaluates the best performing (main_recipe) random forest models' performance on the testing data.
+
+
+### Final Model Assessment
+
+@tbl-7
+shows the performance measure for the winning model. The rmse value measures how far predicted values are from observed values in a regression analysis. In other words, how concentrated the data around the line of best fit. A lower rmse value is better, and here we can see that the rmse for our final random forest model is 0.08 which is very low.
+
+```{r}
+#| echo: false
+#| label: tbl-7
+#| tbl-cap: "RMSE for final random forest model"
+
+load(here("results/rmse_pred_log_rf.rda"))
+
+rmse_pred_log_rf
+```
+
+
 
 ### References:
 

@@ -34,15 +34,29 @@ pred_log_rf <- air_test |>
 
 # model fitted to train data
 rmse_pred_log_rf <-pred_log_rf |> 
-  rmse(aqi_log10, rf_pred_log)
+  rmse(aqi_log10, rf_pred_log) |> select(.metric, .estimate) |> 
+  gt() |>  
+  tab_header(title = md("RMSE for Random Forest")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) |> 
+  cols_label(
+    .metric = "Metric",
+    .estimate = "Estimate"
+  ) 
 
+
+save(rmse_pred_log_rf, file = here("results/rmse_pred_log_rf.rda"))
 
 # 
-pred_log_rf |> 
+final_plot<-pred_log_rf |> 
   mutate(rf_pred_reg = 10^rf_pred_log) |>  
   ggplot(aes(aqi, rf_pred_reg)) +
   geom_point() +
   geom_abline(aes(slope=1, intercept = 0))
+
+
+save()
+
 
 
 
