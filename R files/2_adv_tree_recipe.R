@@ -15,10 +15,7 @@ set.seed(1234)
 
 # more advanced tree recipe
 air_recipe_adv_tree <- recipe(aqi_log10 ~ ., data = air_train) |> 
-  step_mutate(date_month = month(date),
-              date_year = year(date),
-              date_year = factor(date_year),
-              date_month = month(date),
+  step_mutate(date_year = factor(date_year),
               season = case_when(
                 date_month == 12 | (date_month >= 1 & date_month <= 4) ~ "winter",
                 date_month >= 5 & date_month <= 7 ~ "summer",
@@ -29,7 +26,7 @@ air_recipe_adv_tree <- recipe(aqi_log10 ~ ., data = air_train) |>
   step_impute_mode(all_nominal_predictors()) |> 
   step_impute_median(all_numeric_predictors()) |> 
   step_dummy(all_nominal_predictors(), one_hot = TRUE) |> 
-  step_zv(all_predictors()) |> 
+  step_nzv(all_predictors()) |> 
   step_normalize(all_numeric_predictors()) 
 
 

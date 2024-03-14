@@ -35,7 +35,7 @@ bt_wkflw_adv <- workflow() |>
 
 # hyperparameter tuning values ----
 bt_params_adv <- extract_parameter_set_dials(bt_mod_adv) |> 
-  update(mtry = mtry(range = c(1,19)),
+  update(mtry = mtry(range = c(1,15)),
          learn_rate = learn_rate(range = c(-5, -0.2)))
 
 bt_grid_adv <- grid_regular(bt_params_adv, levels = 5)

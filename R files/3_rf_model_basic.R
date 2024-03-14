@@ -24,7 +24,7 @@ load(here("results/air_folds.rda"))
 
 
 # model specifications ----
-rf_mod_basic <- rand_forest(min_n = tune(), trees = 750, mtry = tune()) |> 
+rf_mod_basic <- rand_forest(min_n = tune(), trees = 100, mtry = tune()) |> 
   set_engine("ranger")  |> 
   set_mode("regression") 
 
@@ -38,7 +38,7 @@ rf_wkflw_basic <- workflow() |>
 
 # hyperparameter tuning values ----
 rf_params_basic <- extract_parameter_set_dials(rf_mod_basic) |> 
-  update(mtry = mtry(range = c(1,19)))
+  update(mtry = mtry(range = c(1,15)))
 
 
 rf_grid_basic <- grid_regular(rf_params_basic, levels = 5)

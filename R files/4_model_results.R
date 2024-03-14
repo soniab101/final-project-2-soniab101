@@ -10,12 +10,154 @@ tidymodels_prefer()
 set.seed(1234)
 
 load(here("results/air_folds.rda"))
-load(here("results/air_recipe_basic.rda"))
+load(here("results/air_recipe_basic_lm.rda"))
+load(here("results/air_recipe_adv.rda"))
+load(here("results/air_recipe_base_tree.rda"))
+load(here("results/air_recipe_adv_tree.rda"))
 load(here("results/air_split.rda"))
 load(here("results/keep_pred.rda"))
+
+# load in model results
 load(here("results/null_fit.rda"))
 load(here("results/lm_fit_basic.rda"))
+load(here("results/lm_fit_adv.rda"))
+load(here("results/tuned_en_basic.rda"))
+load(here("results/tuned_en_adv.rda"))
+load(here("results/tuned_rf_basic.rda"))
+load(here("results/tuned_rf_adv.rda"))
+load(here("results/tuned_bt_basic.rda"))
+load(here("results/tuned_bt_adv.rda"))
+load(here("results/tuned_knn_basic.rda"))
+load(here("results/tuned_knn_adv.rda"))
 
+
+# assessment metric results table for all models
+
+#basic recipe model results
+model_results_basic <- as_workflow_set(
+  null = null_fit,
+  lm_basic = lm_fit_basic,
+  en_basic = tuned_en_basic,
+  knn_basic = tuned_knn_basic,
+  rf_basic = tuned_rf_basic,
+  bt_basic = tuned_bt_basic
+)
+
+tbl_result_basic <- model_results_basic |> 
+  collect_metrics() |> 
+  filter(.metric == "rmse") |> 
+  slice_min(mean, by = wflow_id) |> 
+  arrange(mean) |> 
+  distinct(wflow_id, .keep_all = TRUE) |> 
+  select('Model Type' = wflow_id,
+         'RMSE' = mean,
+         'Num Computations' = n,
+         'Standard Error' = std_err) 
+
+write_csv(tbl_result_basic, here("results/tbl_result_basic.csv"))
+
+# gt the table
+  gt() |> 
+  tab_header(title = md("Assessment Metrics"),
+             subtitle = md("All Models - Basic Recipe")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) 
+
+
+
+
+model_results_adv <- as_workflow_set(
+  lm_main = lm_fit_adv,
+  en_main = tuned_en_adv,
+  knn_main = tuned_knn_adv,
+  rf_main = tuned_rf_adv,
+  bt_main = tuned_bt_adv
+)
+
+tbl_result_adv <- model_results_adv |> 
+  collect_metrics() |> 
+  filter(.metric == "rmse") |> 
+  slice_min(mean, by = wflow_id) |> 
+  arrange(mean)  |> 
+  select('Model Type' = wflow_id,
+         'RMSE' = mean,
+         'Num Computations' = n,
+         'Standard Error' = std_err) |> 
+  gt() |> 
+  tab_header(title = md("Assessment Metrics"),
+             subtitle = md("All Models - Main Recipe")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything()))  
+
+write_csv(tbl_result, here("results/tbl_result.csv"))
+
+
+
+# hyperparameters table for knn
+best_knn_basic_param <- tuned_knn_basic |> select_best("rmse") |> 
+  mutate(Recipe = "basic")
+
+best_knn_adv_param<- tuned_knn_adv |> select_best("rmse") |> 
+  mutate(Recipe = "main")
+
+knn_param_table <- bind_rows(best_knn_basic_param, best_knn_adv_param) |> select(Recipe, neighbors) |> 
+  gt() |>  
+  tab_header(title = md("Best Hyperparameters - Nearest Neighbors")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) 
+
+
+# hyperparameters table for en
+best_en_basic_param <- tuned_en_basic |> select_best("rmse") |> 
+  mutate(Recipe = "basic")
+
+best_en_adv_param<- tuned_en_adv |> select_best("rmse") |> 
+  mutate(Recipe = "main")
+
+en_param_table <- bind_rows(best_en_basic_param, best_en_adv_param) |> select(Recipe, penalty, mixture) |> 
+  gt() |>  
+  tab_header(title = md("Best Hyperparameters - Elastic Net")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) 
+
+# hyperparameters table for bt
+best_bt_basic_param <- tuned_bt_basic |> select_best("rmse") |> 
+  mutate(Recipe = "basic")
+
+best_bt_adv_param<- tuned_bt_adv |> select_best("rmse") |> 
+  mutate(Recipe = "main")
+
+bt_param_table <- bind_rows(best_bt_basic_param, best_bt_adv_param) |> 
+  select(Recipe, mtry, min_n, learn_rate) |> 
+  gt() |>  
+  tab_header(title = md("Best Hyperparameters - Boosted Tree")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) |> 
+cols_label(
+              mtry = "Number of Sample Predictors",
+              min_n = "Minimal Node Size",
+              learn_rate = "Learning Rate"
+            ) 
+
+
+# hyperparameters table for bt
+best_bt_basic_param <- tuned_bt_basic |> select_best("rmse") |> 
+  mutate(Recipe = "basic")
+
+best_bt_adv_param<- tuned_bt_adv |> select_best("rmse") |> 
+  mutate(Recipe = "main")
+
+bt_param_table <- bind_rows(best_bt_basic_param, best_bt_adv_param) |> select(Recipe, penalty, mixture) |> 
+  gt() |>  
+  tab_header(title = md("Best Hyperparameters - Elastic Net")) |> 
+  tab_style(style = cell_fill(color = "grey"),
+            locations = cells_column_labels(columns = everything())) 
+
+
+
+
+
+# collect metrics ? do we need ?
 
 null_fit_metrics <- null_fit |> 
   collect_metrics() |> 
@@ -26,7 +168,6 @@ lm_fit_basic_metrics <- lm_fit_basic |>
   collect_metrics() |> 
   mutate(model = "lm basic")
 
-# need to do
 lm_fit_adv_metrics <- lm_fit_adv |> 
   collect_metrics() |> 
   mutate(model = "lm advanced")
@@ -84,8 +225,4 @@ air_metrics_tbl <- air_metrics |>
   tab_header(title = md("Model Assessments")) |> 
   tab_options(row_group.background.color = "gray60")
 
-model_results <- as_workflow_set(
-  knn_basic = tuned_knn_basic,
-  knn_adv = tuned_knn_basic,
-  knn = tuned_knn
-)
+

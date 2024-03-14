@@ -38,16 +38,16 @@ rf_wkflw_adv <- workflow() |>
 
 # hyperparameter tuning values ----
 rf_params_adv <- extract_parameter_set_dials(rf_mod_adv) |> 
-  update(mtry = mtry(range = c(1,19)))
+  update(mtry = mtry(range = c(1,15)))
 
-rf_grid_adv <- grid_random(rf_params_adv, size = 1)
+rf_grid_adv <- grid_regular(rf_params_adv, levels = 5)
 
 
-tuned_rf_adv_random <- tune_grid(rf_wkflw_adv,
+tuned_rf_adv <- tune_grid(rf_wkflw_adv,
                           air_folds,
                           grid = rf_grid_adv,
                           control = control_grid(save_workflow = TRUE))
 
 # write out results (fitted/trained workflows) ----
-save(tuned_rf_adv_random, file = here("results/tuned_rf_adv_random.rda"))
+save(tuned_rf_adv, file = here("results/tuned_rf_adv.rda"))
 

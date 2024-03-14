@@ -28,7 +28,7 @@ en_model_adv <- linear_reg(penalty = tune(), mixture = tune()) |>
 
 en_workflow_adv <- workflow() |> 
   add_model(en_model_adv) |> 
-  add_recipe(air_recipe_basic_en) # FIXXXXXX
+  add_recipe(air_recipe_adv) 
 
 en_params_adv <- extract_parameter_set_dials(en_model_adv) |> 
   update(penalty = penalty(range = c(-2,0)),

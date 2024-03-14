@@ -35,10 +35,7 @@ save(air_train, air_test, file = "results/air_split.rda")
 
 
 
-#### Task 2
-
-#Fold the training data using repeated V-fold cross-validation (5 folds & 3 repeats). 
-#Use stratified sampling when folding the data. 
+# folding data
 
 air_folds <- vfold_cv(air_train, v = 5, repeats = 3,
                      strata = aqi_log10)
