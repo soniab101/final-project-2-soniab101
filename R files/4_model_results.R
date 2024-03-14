@@ -101,6 +101,7 @@ knn_param_table <- bind_rows(best_knn_basic_param, best_knn_adv_param) |> select
   tab_style(style = cell_fill(color = "grey"),
             locations = cells_column_labels(columns = everything())) 
 
+save(knn_param_table, file = here("knn_param_table.rda"))
 
 # hyperparameters table for en
 best_en_basic_param <- tuned_en_basic |> select_best("rmse") |> 
@@ -115,6 +116,9 @@ en_param_table <- bind_rows(best_en_basic_param, best_en_adv_param) |>
   tab_header(title = md("Best Hyperparameters - Elastic Net")) |> 
   tab_style(style = cell_fill(color = "grey"),
             locations = cells_column_labels(columns = everything())) 
+
+
+save(en_param_table, file = here("en_param_table.rda"))
 
 # hyperparameters table for bt
 best_bt_basic_param <- tuned_bt_basic |> select_best("rmse") |> 
@@ -136,6 +140,9 @@ cols_label(
             ) 
 
 
+save(bt_param_table, file = here("bt_param_table.rda"))
+
+
 # hyperparameters table for rf
 best_rf_basic_param <- tuned_rf_basic |> select_best("rmse") |> 
   mutate(Recipe = "basic")
@@ -154,6 +161,7 @@ rf_param_table <- bind_rows(best_rf_basic_param, best_rf_adv_param) |> select(Re
     ) 
 
 
+save(rf_param_table, file = here("rf_param_table.rda"))
 
 
 

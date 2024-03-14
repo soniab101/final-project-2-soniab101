@@ -61,9 +61,7 @@ co_city <- ggplot(mean_CO, aes(x = city, y = mean_CO)) +
   labs(x = "City", y = "Mean CO Value", title = "Average CO Value for Each City") + 
   coord_cartesian(ylim = c(0,5)) + theme(axis.text.x = element_text(face = "bold", angle = 45))
 
-save(co_city, file = here("figures/co_city.png"))
 # nitrous oxide and year relationship: has it increased over the years?
-
 
 
 nox_year_density <- ggplot(training_sample, aes(x = n_ox, fill = date_year)) +

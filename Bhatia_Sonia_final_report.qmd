@@ -72,14 +72,13 @@ To clean the dataset, I cleaned the variable names, and removed the missingness 
 
 ```{r}
 #| echo: false
-  #| label: fig-1
-  #| fig-cap: "Figure 1: Missingness across variables"
+#| label: fig-1
+#| fig-cap: "Missingness across variables"
 
 load(here("results/miss_var_plot.rda"))
 
 miss_var_plot
 
-miss_var_summary(air_data)
 ```
 
 
@@ -87,12 +86,14 @@ I do have missingness issues, as explored in @fig-1
 above. All the variables other than date and city are missing observations, however, for most variables they are just missing a small portion of their observations. I am missing about 15% of the data on my target variable, so I knew I needed to exclude those missing values before continuing with splitting my data. I noticed that I am missing almost 2/3 of the observations for the Xylene variable. The variables with large portions missing may not be as useful as predictor variables. Since my dataset is very large though, I do not believe this missing data will be a significant issue since I still have many valid observations.
 
 ### Target Variable Analysis
-Figure 2 and figure 3 below show the distribution of the air quality index variable. As we can see, the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, I decided it would be best to perform a log transformation to normalize the data.
+@fig-2
+and @fig-3
+below show the distribution of the air quality index variable. The median is around 100, and the data points range from 0 to around 2050. From the histogram, we can see that the mode is about 102. As we can see, the data is right skewed, meaning that the data may violate the assumption of normalcy that some statistical tests we may be interested in performing require. The right skewness also tells us that the median will be a better measure of central tendency than the mean for this dataset. To handle this data for our predictive modeling, I decided it would be best to perform a log transformation to normalize the data.
 
 ```{r}
 #| echo: false
 #| label: fig-2
-#| fig-cap: "Figure 2: Distribution of AQI"
+#| fig-cap: "Distribution of AQI (Histogram)"
 
 air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "white", bins = 30) +
   scale_x_continuous(limits = c(0,1000)) +
@@ -100,10 +101,158 @@ air_data |> ggplot(aes(x = AQI)) + geom_histogram(fill = "seagreen", color = "wh
 
 ```
 
+```{r}
+#| echo: false
+#| label: fig-3
+#| fig-cap: "Distribution of AQI (Boxplot)"
+
+
+air_data |> ggplot(aes(x = AQI)) + geom_boxplot(fill = "lightseagreen") +
+  labs(title = "Air Quality in India", x = "Air Quality Index")
+```
+
+
+
+## Methods:
+
+### Data Splitting:
+I split my cleaned data into training and testing sets using stratified splitting by my target variable, air quality index transformed to now be on a log10 scale, with 70% of the data as the training data and 30% as the testing. 
+
+### Resampling:
+The data was resampled using v-fold cross-validation with 5 folds and 3 repeats. This results in 15 models per fit. I chose this method since it allows for me to have a comprehensive assessment of the model's performance as it evaluates the model on different subsets of the data. K-fold cross-validation can provide a more reliable estimate of model performance compared to a single train-test split, especially when the dataset is limited. I chose this over bootstrap resampling as k-fold cross-validation provides a better balance between bias and variance compared to bootstrap resampling. It uses distinct training and validation sets, which can help in better estimating model performance on unseen data. Also, k-fold cross validation tends to be less prone to overfitting than boostrap resampling. I chose 5 folds and 3 repeats since they are a common combination as a benchmark, and I did not want to slow down my computation time significantly when creating models. 
+
+### Recipes:
+I use 4 recipes to create my models. Since my predictor variable is air quality index (AQI) on a log10 scale, I removed the original AQI variable in my basic recipe. I also chose to remove the variable that classified which bucket the AQI index fell into, such as severe or moderate, since that is not used in predicting the AQI but is determined after the fact based off of the value. I chose to remove the date as well since I already extracted the month and year which were more of interest to me. Since many of my variables had missingness, I imputed the nominal predictors by substitutiting missing values of nominal variables by the training set mode of those variables, and imputed the numeric predictors by subtituting the missing values by training set median of these variables. In the future, I would choose to remove some of the variables containing lots of missingess such as xylene because these most likely do not serve as good predictors. Additionally, the recipe creates dummy variables for the nominal predictors, removes the variables that have zero variance, and normalizes all the numeric predictors.
+
+The main recipe does the same steps as the basic recipe, except it creates a variable for season based off of the month variable. I did this to avoid using a variable with too many levels, and I felt like the season itself is what could be having an impact on the AQI. This recipe included interaction terms, which analyzes the impact of these variables separately. I conducted an EDA on my dataset to determine the relationships between my predictor variables. I figured there may be a relationship between the time of year and certain gases that become more concentrated in the atmosphere. I investigated and found that there was a relationship between the season and nitrogen dioxide levels in the air. There are much higher levels in the winter seasons and significantly lower levels in the monsoon season. Additionally, I found a relationship between season and ozone levels in the air. I found a similar trend to carbon monoxide levels through the seasons, and decided to also include it as in interaction term. I thought city and carbon monoxide levels may be related since cities with higher populations would have more traffic flow releasing more carbon monoxide. After investigating these variables, I found a relationship between the two. I ended up not including this interaction because the city variables had so many levels (26) that I figured I could be over parameterizing my recipe. Next, I figured particulate matter of size 2.5 micrometers or less would be related to levels of larger particular matter of size 10 micrometers or less, and I found that there was a positive relationship between the two. The graphs from this EDA can be found in the appendix. 
+
+The basic and main recipes for the forest models include the same steps as these basic and main recipes respectively, except they also utilize one-hot encoding. 
+
+
+### Model Types:
+The problem I am interested in here is a regression problem since I am trying to predict the numeric AQI. The models I created were null, linear, elastic net, k-nearest neighbors, boosted tree, and random forest. The null model only uses the basic parametric recipe, while the lienar and elastic net use the basic and main parametric recipes. The  k-nearest neighbors, boosted tree, and random forest models all use the basic and main tree recipes. 
+
+### Tuning Parameters:
+Tuning parameters are set before the training begins. They control the behavior of the learning algorithm and can significantly affect the performance of the model. The purpose of tuning parameters is to optimize the model's performance by finding the best combination of hyperparameters for a given dataset and problem.
+
+The elastic net, boosted tree, random forest, and nearest neighbors models all utilize tuning. 
+
+Firstly, the elastic net model uses tuning for the mixture and penalty. I updated the range of  the mixture to be from 0 to 1, since the lower bound of 0 is the standard value for a fully ridge model and the upper bound of 1 indicates a fully lasso model. With this range, I could determine what the optimal amount of ridge and lasso is. The tuning parameters for penalty have been updated to range from -2 to 0. The range for penalty is on a log10 scale here, so this range once transformed back to a normal scale ranges from 10^-2 = 0.01 to 10^0 = 1. The penalty is typically set at 0.01, so I thought it would be interesting to explore a wider variety of penalties to assess which is the best. I  used 10 levels, so the model was fit to 10 different levels of penalty in the range. 
+
+The random forest model uses tuning for determining the number of sample predictors, minimum node size. I chose the range of the number of sample predictors to be from 0 to 15, since the upper bound is the number of predictors I had. The range for mtry should typically cover a wide enough span to explore different levels of randomness in feature selection. For the minimum node size, I used the default range since that typically contains the best value for that hyperparameter. The minimum node size acts as a stopping criterion for splitting in a decision tree in random forest models. I chose a fixed number of trees of 100. While typically you want to chose a high value for trees as your processor can handle without increasing the computation time too much. As the number of trees grows, it does not always mean the performance of the forest is significantly better than previous forests, so one does not need to always choose an extremely high number of trees. I tried running one random forest model with 100 trees, and found that its rmse was fairly low, so I determined to proceed with using 100 trees to create all of my random forest models since my computation time would not be too long. In the future, I may want to try still using a slightly higher value for the trees to see if it gives me a higher model performance. 
+
+
+The boosted tree model utilizes tuning parameters for determining the number of sample predictors, minimum node size, and learning rate.  For the minimum node size, I did not update it and kept it as the default range again. I also used the same range for the number of sample predictors. The learning rate means how fast the model learns. Gradient boosted decision trees are typically quick to learn and overfit training data. The learning rate is an effective way to slow down learning. I updated the learning rate range to (-5, -0.2) since -0.2 was close enough to 0, and lower ranges of learning rates are good when using more trees. Looking back on my range selection, since I used a number of trees that was relatively low, I could have maybe increased the learning rate range. This range is also on a log10 scale. 
+
+
+The k-nearest neighbors model utilizes tuning for the neighbors variable. I did not update the range that it uses, since the default range typically contains the best hyperparameter values and results it the most accurate knn models.  
+
+
+### Assessment metric
+To evaluate the performance of my predictive model, I will use rmse. Originally, I had chosen to also use r^2 as a performance metric, but since some models such as elastic net do not use it as a metric, I figured it would be better to have one standardized metric to compare all my models on. RMSE is the root mean squared error, and tells us how much error our model has in predicting values that correctly match the actual values. I will use RMSE as my primary metric, and determine which model performs the best by evaluating which has the lowest RMSE. The rmse values in the upcoming tables are on the log10 scale. 
+
+## Model Building & Selection Results:
+
+## Model Performance on Basic Recipes:
+
+@tbl-1 
+below shows the performance of the six models built on the basic recipe. It is arranged from best performance based off of rmse value to worst performance. This table demonstrates to us that all of the models performed better than the null model on this recipe, meaning that building more complex models is worth the additional computation time and space. There is quite a large drop in rmse from the null's rmse value of 0.29 to the elastic net's rmse of 0.13. From this table, we can see that the random forest model performed the best and had the lowest rmse of 0.08 meaning that its predictions of air quality indices was accurate. 
+```{r}
+#| echo: false
+#| label: tbl-1
+#| tbl-cap: "Evaluation of six models built from the basic recipe"
+
+load(here("results/tbl_result_basic.rda"))
+
+tbl_result_basic
+```
+
+
+In @tbl-2
+below, we explore the 5 other model types' performance on their main recipes. Once again, the random forest model performed the best with the lowest rmse value of 0.080. All of the models have very low and similar values for the standard error. While the elastic net model had the lowest performance, its rmse was still fairly low with a value of 0.12. All of the models seem to be making accurate predictions in comparison to the actual values, but we can still observe from this table that more complex models are useful in making the most accurate predictions. 
+
+
+```{r}
+#| echo: false
+#| tbl: tbl-2
+#| tbl-cap: "Evaluation of six models built from the main recipe"
+
+load(here("results/tbl_result_adv.rda"))
+
+tbl_result_adv
+```
+
+### Best Hyperparameters Per Model
+
+#### Random Forest and Boosted Tree (Tree-Based Models)
+@tbl-3 and @tbl-4 shows the best hyperparameters for the boosted tree and random forest models. For all models except for the random forest on basic recipe, the optimal number of sample predictors was 15. This demonstrates that it is important to select the range of sample predictors to include the total number of predictors. I found it interesting that the optimal minimal node size was much higher for the boosted tree models than it was for the random forest models. The best learning rate was 0.63, and was the same for the basic and feature engineered model for the boosted tree models. It is interesting that this is the upper bound of our learning rate range (10^-2), and demonstrates that the learning rate should be set close to 0.
+
+```{r}
+#| echo: false
+#| tbl: tbl-3
+#| tbl-cap: "Best hyperparameters for boosted tree model for both recipes"
+
+
+load(here("bt_param_table.rda"))
+
+bt_param_table
+```
+
+```{r}
+#| echo: false
+#| tbl: tbl-4
+#| tbl-cap: "Best hyperparameters for random forest model for both recipes"
+
+
+load(here("rf_param_table.rda"))
+
+rf_param_table
+```
+
+
+### K-Nearest Neighbors:
+
+@tbl-5
+below shows the optimal hyperparameter values for the k-nearest neighbors model. It is interesting that there is a smaller value for neighbors for the feature engineered recipe than for the basic recipe. A higher number of neighbors typically leads to prevent overfitting of the data. These numbers seem to be slightly high considering I have 15 predictors, which is interesting.
+
+```{r}
+#| echo: false
+#| tbl: tbl-5
+#| tbl-cap: "Best hyperparameters for nearest neighbors for both recipes"
+
+
+load(here("knn_param_table.rda"))
+
+knn_param_table
+```
+
+### Elastic Net
+
+@tbl-6
+shows the best hyperparameters for the elastic net model. The mixture value for the basic recipe is 0, which indicates that a fully ridge regression model had the highest performance. The main recipe's mixture is 0.11, so there is a bit of a mix of lasso. I would be interested to see the impact on the models' performance using a full lasso regression model. The penalty for both basic and main recipes is 10^0.01 which was on the upper end of our range, indicating that a model typically performs better when we use a more strict penalty that allows for the exclusion of more predictors. This makes sense for my model because I had quite a few variables that had some missingness meaning that they may have not been the best predictors.
+
+```{r}
+#| echo: false
+#| tbl: tbl-6
+#| tbl-cap: "Best hyperparameters for elastic net for both recipes"
+
+
+load(here("en_param_table.rda"))
+
+en_param_table
+```
+
+### Discussion:
+Overall, the random forest model performed the best for both the basic and feature engineered recipe. I was not surprised by this, as it typically has high accuracy in its predictions and prevents overfitting well. It performed slightly better on the main recipe than it did on the basic recipe, but the difference is surprisingly very minimal. 
+
+While all models saw slight improvement in the rmse values between the basic recipe and feature engineered (main) recipe, there was not a significant difference which I found surprising. This could be due to some of 
+
 ### References:
 
 Air Quality in India. Found on Kaggle, linked here: [https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india]
 
 Data is from Central Pollution Control Board : [https://cpcb.nic.in/]
 
+### Appendix:
 
+![Distribution of World Cup Title Wins by Country](figures/co_city.png){#fig-bar1}
