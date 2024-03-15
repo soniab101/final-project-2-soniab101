@@ -31,10 +31,26 @@ citation-location: margin
 :::
 
 ## Introduction
-In this project, I was interested to see if we are able to predict the air quality on a certain day based off certain factors such as nitrogen oxide levels, nitric dioxide, and ammonia levels in the air. My dataset contained information about air quality levels in different parts of India over five years. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
+In this project, I was interested to see if we are able to predict the air quality on a certain day based off certain factors such as nitrogen oxide levels, nitric dioxide, and ammonia levels in the air. My dataset contained information about air quality levels in different parts of India over 2015 to 2020. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
 
 ## Summary
 
+I found that the random forest model using the main featured engineered recipe performed the best of my six models. To assess the performance of each model, I looked at their rmse values. RMSE is the root mean squared error, and tells us how much error our model has in predicting values that correctly match the actual values. On both the basic and main recipe, the random forest model had the lowest rmse value of about 0.080, and was slightly lower for the main recipe. The optimal tuning parameters identified for the basic recipe were 8 sample predictors and a minimum node size of 2. For the main recipe the best hyperparameters were 15 sample predictors and a minimum node size of 2. This demonstrates that it is important to select the range of sample predictors to include the total number of predictors, as the best number of sample predictors was the upper bound of our range, or total number of predictors. 
+The minimum node size acts as a stopping criterion for splitting in a decision tree in random forest models. The default range seemed to be good enough to use for tuning. Lastly, for the recipe, I found that it is important to always impute variables with missingness and to try and minimize the number of levels that categorical variables have. It was important for this recipe to also create dummy variables for the categorical predictors, remove variables with zero variance, and normalize all of the predictors. 
 
+After training the the random forest model to the whole training dataset, we evaluated its performance on the testing data set and saw that it performed very well. It had a very low rmse value of 0.081 suggesting that the model is fitting the data well and is making reliable predictions. Additionally, @fig-1
+below allows us to visualize the accuracy of the random forest model's predictions. It plots the predicted observations by the observed observations, transformed back to the original scale. As we can see, the datapoints are very highly clustered around the line of best fit, showing the high accuracy of the model. Some data points with higher values tend to fall below the line of best fit, meaning that our model may not be as accurate at predicting unusually high air quality levels. 
 
+Since this dataset does contain time series data, it is important to also build models that are specific for time series data, such as ARIMA models, which use linear forecasting. This is definitely something that I want to explore, and see how the performance of that model compares to our random forest model.
+
+```{r}
+#| echo: false
+#| label: fig-1
+#| fig-cap: "Plot of Predicted Observations vs Actual Observations"
+library(tidyverse)
+library(here)
+load(here("results/final_plot.rda"))
+
+final_plot
+```
 
