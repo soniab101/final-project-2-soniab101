@@ -30,22 +30,31 @@ training_sample <- training_sample |> mutate(date = as_date(date)) |>
 
 
 # interaction between month of year and nitrogen dioxide 
-season_no2 <- training_sample |> ggplot(aes(x = season, y = no2, fill = season)) + geom_col() 
+season_no2 <- training_sample |> ggplot(aes(x = season, y = no2, fill = season)) + 
+  geom_col() +
+  labs(title = "Nitrogen dioxide levels by season",
+       y = "nitrogen dioxide")
+
+save(season_no2, file = "results/season_no2.rda")
 
 # interaction between month of year and nitrogen dioxide 
 season_o3 <- training_sample |> ggplot(aes(x = season, y = o3, fill = season)) + geom_col() 
 
+save(season_o3, file = "results/season_o3.rda")
+
 # interaction between no and o3: no
 no_o3 <- training_sample |> ggplot(aes(x = no, y = o3)) + geom_point() + geom_smooth()
+
 
 # interaction of benzene and pm2_5: no
 benzene_pm2_5 <- training_sample |> ggplot(aes(x = benzene, y = pm2_5)) + geom_point() + geom_smooth() + 
   coord_cartesian(xlim = c(0,3))
 
+
 # interaction between pm2_5 and pm10: yes
-benzene_pm2_5_pm10 <- training_sample |> ggplot(aes(x = pm2_5, y = pm10)) + geom_point() + geom_smooth() 
+pm2_5_pm10 <- training_sample |> ggplot(aes(x = pm2_5, y = pm10)) + geom_point() + geom_smooth() 
 
-
+save(pm2_5_pm10, file = "results/pm2_5_pm10.rda")
 
 # interaction between avg co and city bc of high traffic volume
 

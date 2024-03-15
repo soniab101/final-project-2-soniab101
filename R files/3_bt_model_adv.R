@@ -15,7 +15,7 @@ registerDoMC(cores = num_cores)
 set.seed(1234)
 
 load(here("results/air_split.rda"))
-load(here("results/air_recipe_basic.rda"))
+load(here("results/air_recipe_basic_lm.rda"))
 load(here("results/air_recipe_adv.rda"))
 load(here("results/air_recipe_base_tree.rda"))
 load(here("results/air_recipe_adv_tree.rda"))

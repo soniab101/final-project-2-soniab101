@@ -56,7 +56,7 @@ My prediction research question is can we predict the air quality on a certain d
 
 ### Data Source:
 
-This dataset is titled ’Air Quality Data in India (2015-2020) and is downloaded from Kaggle. The data has been compiled from the Central Pollution Control Board (CPCB) website: https://cpcb.nic.in/ which is the official body of Government of India. 
+This dataset is titled ’Air Quality Data in India (2015-2020) and is downloaded from Kaggle. The data has been compiled from the Central Pollution Control Board (CPCB) website: [https://cpcb.nic.in/](https://cpcb.nic.in/) which is the official body of Government of India. 
 
 
 ## Data Overview:
@@ -174,7 +174,7 @@ below, we explore the 5 other model types' performance on their main recipes. On
 
 ```{r}
 #| echo: false
-#| tbl: tbl-2
+#| label: tbl-2
 #| tbl-cap: "Evaluation of six models built from the main recipe"
 
 load(here("results/tbl_result_adv.rda"))
@@ -189,7 +189,7 @@ tbl_result_adv
 
 ```{r}
 #| echo: false
-#| tbl: tbl-3
+#| label: tbl-3
 #| tbl-cap: "Best hyperparameters for boosted tree model for both recipes"
 
 
@@ -200,7 +200,7 @@ bt_param_table
 
 ```{r}
 #| echo: false
-#| tbl: tbl-4
+#| label: tbl-4
 #| tbl-cap: "Best hyperparameters for random forest model for both recipes"
 
 
@@ -217,7 +217,7 @@ below shows the optimal hyperparameter values for the k-nearest neighbors model.
 
 ```{r}
 #| echo: false
-#| tbl: tbl-5
+#| label: tbl-5
 #| tbl-cap: "Best hyperparameters for nearest neighbors for both recipes"
 
 
@@ -233,7 +233,7 @@ shows the best hyperparameters for the elastic net model. The mixture value for 
 
 ```{r}
 #| echo: false
-#| tbl: tbl-6
+#| label: tbl-6
 #| tbl-cap: "Best hyperparameters for elastic net for both recipes"
 
 
@@ -270,14 +270,88 @@ load(here("results/rmse_pred_log_rf.rda"))
 rmse_pred_log_rf
 ```
 
+### Predicted Versus Actual Results
+
+@fig-4
+allows us to visualize the accuracy of the random forest model's predictions. It plots the predicted observations by the observed observations, transformed back to the original scale. As we can see, the datapoints are very highly clustered around the line of best fit, showing the high accuracy of the model. It is interesting that the values of around 500 and lower for aqi are highly concentrated around the line of best fit, while the higher values are a little less accurately predicted and tend to fall more below the line of best fit. This could indicate that the higher values are less frequent since often we do not experience very unhealthy air quality levels, and therefore are harder to predict by the model. Also, the slope of the line of best fit may be accurate for most predictions, but then seems to increase too quickly to accurately predict days with higher unhealthy air quality since it anticipates the levels are higher than they actually are. Overall though, the random forest model was very accurate in its predictions. 
+
+```{r}
+#| echo: false
+#| label: fig-4
+#| fig-cap: "Plot of Predicted Observations vs Actual Observations"
+
+load(here("results/final_plot.rda"))
+
+final_plot
+```
 
 
-### References:
 
-Air Quality in India. Found on Kaggle, linked here: [https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india]
+## Conclusion:
 
-Data is from Central Pollution Control Board : [https://cpcb.nic.in/]
+Overall, I was able to learn a lot in depth about the best practices to go about when building complex machine learning models for optimal performance. From my dataset, I was able to gain more insight regarding what steps to take into consideration when building recipes. Since my data had variables with a lot of missingness, I concluded that imputing these variables, either based off of their mode or median, is a good technique to handle missingness. However, I learned that I should most likely remove the variables that contain greater than 30% of missingness, as they may not be useful predictors and should not be included. I am interested to see the difference in my model performance if I had excluded these. Additionally, I have reflected on different ways to treat categorical variables with many levels. In my dataset, I had a variable for city which coded which city the data was taken from. Once I converted this variable to a factor variable, I realized there were 26 separate levels. In the future, I will definitely consider transforming this variable so that only the top 5 most frequently occuring cities are separate levels and the rest fall into an other group. Too many levels can lead to overfitting, so this could have affected my models’ performances. I learned that feature engineering can help us determine which variables are good predictors, and help us refine our recipes to determine which ones to include in the final version. 
 
-### Appendix:
+Furthermore, I was able to observe the benefits of using tuning for hyperparameters, as it allowed us to observe the models’ performances on a variety of hyperparameters, and then select the best combination as our final one. 
 
-![Distribution of World Cup Title Wins by Country](figures/co_city.png){#fig-bar1}
+I realized after doing more analysis that my data set contained time series data since my data was recorded over a consistent period of time. This is definitely something that is important to assess before getting started with modeling for next time, because it influences what types of models should be used for prediction. For example, the Auto-Regressive Integrated Moving Average (ARIMA) models are widely used for time series data, and are used for linear forecasting. A future project could be building an ARIMA model for this dataset to see how it deals with the time series data better. However, my models still performed well despite my data not being the most suited for this type of project. A project I would also be interested in exploring is creating a classification model for this data to see how accurately it can classify the AQI bucket category with levels such as severe, moderate, and good. 
+
+
+## References:
+
+Air Quality in India. Found on Kaggle, linked here: [https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india](https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india)
+
+Data is from Central Pollution Control Board : [https://cpcb.nic.in/](https://cpcb.nic.in/)
+
+## Appendix:
+Below is the EDA I performed on the training dataset to explore any interactions that may be present between predictor variables. These plots help to justify my thought processes behind selecting which interaction terms to use when building my main recipe. 
+
+
+@fig-5 
+shows the relationship between nitrogen dioxide levels and the time of year. I anticipated that there must be some relationship between certain atmospheric gases and the time of year, and decided to investigate this. As we can see, in winter levels of no2 reach their highest of around 200000 while they are relatively low in the monsoon season. They do not change much from summer to post monsoon.
+```{r}
+#| echo: false
+#| label: fig-5
+#| fig-cap: "Nitrogen Dioxide Levels by Season"
+
+load(here("results/season_no2.rda"))
+
+season_no2
+```
+In
+@fig-6,
+we can see a similar relationship between the seasons and ozone levels. They are very high in the winter season with values of around 225000, and much lower in the monsoon season with values close to 50000. In comparison to the nitrogen dioxide levels however, there is a difference in ozone levels in post monsoon and summer seasons. There is a clear relationship between these predictors. 
+```{r}
+#| echo: false
+#| label: fig-6
+#| fig-cap: "Ozone Levels by Season"
+
+load(here("results/season_o3.rda"))
+
+season_o3
+```
+
+
+@fig-7
+shows the clear relationship between particular matter of size 2.5 micrometers and lower and particulate matter of 10 micrometers and smaller. These particles pose great risk to health, and are present in the air when air quality levels are unhealthy. Since these are both similar particles but of different sizes, I anticipated there would be a relationship between them and decided to investigate it. The relationship almost looks like a square root function graph.
+```{r}
+#| echo: false
+#| label: fig-7
+#| fig-cap: "Nitrogen Dioxide Levels by Season"
+
+load(here("results/pm2_5_pm10.rda"))
+
+pm2_5_pm10
+```
+
+Lastly, I wanted to investigate if there was a relationship between carbon monoxide levels and the city they are measured in. @fig-8
+depicts this relationship. There does seem to be differences in levels dending on the city, with Ahmedabad having much higher mean carbon monoxide values than other cities. The relationship between these two variables could be caused by having high traffic volume since cars release carbon monoxide gas into the air. I did not decide to include this interaction in my final recipe, however, due to the high numebr of levels of the city variable since I did not want to introduce many new varibles once creating an interaction term.
+```{r}
+#| echo: false
+#| label: fig-8
+#| fig-cap: "Nitrogen Dioxide Levels by Season"
+
+load(here("results/co_city.rda"))
+
+co_city
+```
+

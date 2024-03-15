@@ -55,7 +55,7 @@ final_plot<-pred_log_rf |>
   geom_abline(aes(slope=1, intercept = 0))
 
 
-save()
+save(final_plot, file = here("results/final_plot.rda"))
 
 
 

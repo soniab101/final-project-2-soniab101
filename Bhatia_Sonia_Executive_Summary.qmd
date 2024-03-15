@@ -1,0 +1,40 @@
+---
+title: "Executive Summary"
+subtitle: |
+  | Final Project 
+  | Data Science 2 with R (STAT 301-2)
+author: "Sonia Bhatia"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+reference-location: margin
+citation-location: margin
+---
+
+
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[My GitHub Repo Link](https://github.com/stat301-2-2024-winter/final-project-2-soniab101)
+
+:::
+
+## Introduction
+In this project, I was interested to see if we are able to predict the air quality on a certain day based off certain factors such as nitrogen oxide levels, nitric dioxide, and ammonia levels in the air. My dataset contained information about air quality levels in different parts of India over five years. I am interested in pursuing this problem because it has many important applications in areas of public health, environmental health, and urban development. For example, poor air quality can have severe health implications, especially for vulnerable populations such as children, the elderly, and those with respiratory conditions. Predicting air quality allows authorities to issue warnings and advisories, helping people take necessary precautions to protect their health.
+
+## Summary
+
+
+
+
