@@ -1,7 +1,5 @@
 ## Basic repo setup for final project
 
-Describe project and general structure of repo ...
-
 For this project, my prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem.
 
 
@@ -18,7 +16,7 @@ For this project, my prediction research question is can we predict the air qual
 	◦	2_adv_base_recipe.R ~ This contains the code for the basic recipe for tree models (knn, random forest, boosted tree)
 	◦	Starts with 3_ ~ These files contain the code for the 6 different models on both recipes - rf, bt, knn, elastic, linreg, and null 
 	◦	4_model_results ~ This file contains the model analysis and code 
-	◦ 5_fitting_best_mod ~ this contains the fitting of the model that performed the best to the training data
-	◦ 6_best_model_results ~ This file contains the evaluation of the model performance on the test data
+	◦ 	5_fitting_best_mod ~ this contains the fitting of the model that performed the best to the training data
+	◦ 	6_best_model_results ~ This file contains the evaluation of the model performance on the test data
 	
 	•	results ~ This contains all the rda files for the split data, recipes, model fits, tables, and graphs
