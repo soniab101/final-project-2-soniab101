@@ -3,7 +3,7 @@
 For this project, my prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem.
 
 
-## Folders
+## Structure of this repository
 	•	data ~ This contains the raw data file 
 	
 	•	R files ~ This contains all the .R files where the code has been conducted. The following R files are present in this folder:
