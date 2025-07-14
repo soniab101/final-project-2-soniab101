@@ -1,5 +1,3 @@
-## Basic repo setup for final project
-
 For this project, my prediction research question is can we predict the air quality on a certain day based off certain factors such as nitric oxide levels, nitric dioxide, and ammonia levels in the air. My variable of interest is air quality level (AQI variable), and this is a regression problem.
 
 
